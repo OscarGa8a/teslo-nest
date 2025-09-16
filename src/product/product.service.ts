@@ -91,16 +91,27 @@ export class ProductService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
+    const { images, ...restProperties } = updateProductDto;
+
     const product = await this.productRepository.preload({
       id,
-      ...updateProductDto,
-      images: [],
+      ...restProperties,
     });
 
     if (!product)
       throw new NotFoundException(`Product with id: ${id} not found`);
 
+    // Create query runner
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
+      if (images) {
+        queryRunner.manager.delete(ProductImage, { product: { id } });
+      }
+
       await this.productRepository.save(product);
       return product;
     } catch (error) {
