@@ -110,11 +110,22 @@ export class ProductService {
     try {
       if (images) {
         queryRunner.manager.delete(ProductImage, { product: { id } });
+
+        product.images = images.map((image) =>
+          this.productImageRepository.create({ url: image }),
+        );
       }
 
-      await this.productRepository.save(product);
-      return product;
+      await queryRunner.manager.save(product);
+      // await this.productRepository.save(product);
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      // return product;
+      return this.findOnePlain(id);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
       this.handleDBExceptions(error);
     }
   }
@@ -129,5 +140,15 @@ export class ProductService {
 
     this.logger.error(error);
     throw new BadRequestException('Unexpected error, check server logs');
+  }
+
+  async deleteAllProducts() {
+    const query = this.productRepository.createQueryBuilder('product');
+
+    try {
+      await query.delete().where({}).execute();
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 }
