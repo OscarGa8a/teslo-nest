@@ -8,11 +8,12 @@
 1. Clonar el proyecto
 
 2. Instalar dependencias
+
 ```
 yarn install
 ```
 
-3. Clonar el archivo ```.env.template``` y renombrarlo a ```.env```
+3. Clonar el archivo `.env.template` y renombrarlo a `.env`
 
 4. Cambiar las variables de entorno
 
@@ -23,6 +24,13 @@ docker-compose up -d
 ```
 
 6. Desplegar el modo desarrollo
+
 ```
 yarn start:dev
+```
+
+7. Ejecutar SEED
+
+```
+http://localhost:3000/api/seed
 ```
