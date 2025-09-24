@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  AfterInsert,
+  BeforeInsert,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -19,4 +25,18 @@ export class User {
 
   @Column('text', { array: true, default: ['user'] })
   roles: string[];
+
+  @BeforeInsert()
+  checkFieldsBeforeInsert() {
+    this.setEmailToLowerCase();
+  }
+
+  @AfterInsert()
+  checkFieldsAfterInsert() {
+    this.setEmailToLowerCase();
+  }
+
+  private setEmailToLowerCase() {
+    this.email = this.email.toLowerCase().trim();
+  }
 }
