@@ -21,7 +21,7 @@ export class AuthService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    public readonly userRepository: Repository<User>,
 
     private readonly jwtService: JwtService,
   ) {}
@@ -66,8 +66,37 @@ export class AuthService {
     return { ...user, token: this.getJwtToken({ id: user.id }) };
   }
 
+  // async checkAuthStatus(user: User) {
+  //   const userRepository = await this.userRepository.findOneBy({ id: user.id });
+
+  //   if (!userRepository) throw new UnauthorizedException('Invalid userId');
+
+  //   return {
+  //     ...userRepository,
+  //     token: this.getJwtToken({ id: user.id }),
+  //   };
+  // }
+
+  checkAuthStatus(user: User) {
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
+
   private getJwtToken(payload: JwtPayload) {
     return this.jwtService.sign(payload);
+  }
+
+  async deleteAllUsers() {
+    const query = this.userRepository.createQueryBuilder();
+    // this.userRepository.deleteAll();
+
+    try {
+      await query.delete().where({}).execute();
+    } catch (error) {
+      this.handleDBError(error);
+    }
   }
 
   private handleDBError(error: any): never {
