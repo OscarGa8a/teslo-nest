@@ -34,6 +34,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     //   signOptions: { expiresIn: '2h' },
     // }),
   ],
-  exports: [PassportModule, AuthService, JwtModule],
+  exports: [PassportModule, AuthService, JwtModule, TypeOrmModule],
 })
 export class AuthModule {}
